@@ -1,47 +1,71 @@
-# outlook_reader.py
+import time
+from datetime import datetime, timedelta
 
+import pytz  # Para manejar la zona horaria
+from exchangelib import DELEGATE, EWSDateTime
 from Modules.conexion import conectar_outlook
 from Modules.categorizar import categorizar_correo
-from exchangelib import Message
 
-def leer_correos_no_leidos(max_correos=10):
+def leer_y_categorizar_correos(max_correos=20, dias=30):
     """
-    Conecta a la cuenta de Outlook y devuelve
-    los correos no leídos más recientes.
+    1. Se conecta a Outlook.
+    2. Toma hasta 'max_correos' correos en los últimos 'dias' días.
+    3. Categorizarlos con la IA, haciendo una pausa cada 3 correos.
     """
+
+    # Conecta a la cuenta
     cuenta = conectar_outlook()
-    bandeja_entrada = cuenta.inbox.filter(is_read=False).order_by('-datetime_received')[:max_correos]
 
-    correos = []
-    for email in bandeja_entrada:
-        correos.append({
-            "remitente": email.sender.email_address if email.sender else "",
-            "asunto": email.subject or "",
-            "cuerpo": email.text_body or "",
-            "id": email.id
-        })
-    return correos
+    # Definir la zona horaria adecuada para tu región (ej. Buenos Aires)
+    tz = pytz.timezone("America/Argentina/Buenos_Aires")
 
-def main():
-    correos = leer_correos_no_leidos()
-    if not correos:
-        print("No hay correos nuevos.")
+    # Calcular fecha de inicio (timezone-aware)
+    fecha_inicio = datetime.now(tz) - timedelta(days=dias)
+    fecha_inicio_ews = EWSDateTime.from_datetime(fecha_inicio)
+
+    # Filtrar correos desde 'fecha_inicio_ews', más recientes primero, 
+    # y tomar hasta 'max_correos'.
+    qs = (
+        cuenta.inbox
+        .filter(datetime_received__gte=fecha_inicio_ews)
+        .order_by('-datetime_received')
+        .all()
+    )
+
+    # Convertir a lista para poder medir su length y slice
+    correos_lista = list(qs)  # convertir generador a lista
+    correos_lista = correos_lista[:max_correos]  # limitamos a los 'max_correos'
+
+    if not correos_lista:
+        print("No hay correos disponibles en el rango especificado.")
         return
 
-    for correo in correos:
-        asunto = correo["asunto"]
-        cuerpo = correo["cuerpo"]
+    print(f"Encontrados {len(correos_lista)} correos. Procesando...")
 
-        print(f"Correo recibido de {correo['remitente']} - Asunto: {asunto}")
+    procesados = 0
+    for email in correos_lista:
+        asunto = email.subject or "(Sin asunto)"
+        cuerpo = email.text_body or "(Sin contenido)"
+        remitente = email.sender.email_address if email.sender else "(Desconocido)"
 
-        # Categorización con IA
+        print("\n--------------------------------------------------------")
+        print(f"Correo de: {remitente}")
+        print(f"Asunto: {asunto}")
+
+        # Llamada a tu función de categorización
         categoria = categorizar_correo(asunto, cuerpo)
-        print(f"  -> Categoría asignada: {categoria}")
+        print(f"Categoría sugerida: {categoria}")
 
-        # Aquí podrías llamar a otros módulos, por ejemplo:
-        #   acciones.realizar_accion(categoria, correo)
-        #   respuestas.responder(categoria, correo)
-        # según la lógica que vayas implementando más adelante.
+        procesados += 1
+        # Pausa cada 3 correos para no saturar la API
+        if procesados % 3 == 0:
+            print("Esperando 2 segundos para evitar saturar la API...")
+            time.sleep(6)
+
+    print(f"\nSe procesaron {procesados} correos en total.")
+
+def main():
+    leer_y_categorizar_correos(max_correos=10, dias=30)
 
 if __name__ == "__main__":
     main()

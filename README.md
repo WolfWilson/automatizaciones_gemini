@@ -53,9 +53,17 @@ python -m venv venv
 pip install -r requirements.txt
 
 ```
-###4️⃣ **Ejecutar la aplicación**
+###4️⃣ **Configurar Variables de Entorno**
+Crea un archivo .env en el directorio raíz con el siguiente contenido:
 ```sh
-python main.py
+GOOGLE_GEMINI_API_KEY="TU_API_KEY_DE_GOOGLE"
+
+```
+###  5️⃣ **Ejecutar el Bot en Tiempo Real**
+El bot se mantendrá en ejecución revisando correos nuevos y generando respuestas automáticamente.
+
+```sh
+python outlook_reader_realtime.py
 
 ```
 
@@ -89,7 +97,7 @@ python main.py
 3️⃣ Consulta la guía de respuestas para determinar qué hacer.  
 4️⃣ Genera un mensaje humano basado en la guía, sin citarla textualmente.  
 5️⃣ Guarda la respuesta y la acción en logs, sin enviar correos aún.  
-6️⃣ Continúa ejecutándose en un bucle esperando más correos.  S
+6️⃣ Continúa ejecutándose en un bucle esperando más correos. 
 ```
 
 ## 📄 Ejemplo de Registro en Log
@@ -97,20 +105,19 @@ python main.py
 
 ```yaml
 CorreoID: A23JK9X
-Asunto: Problema con mi cuenta
-Categoría: Soporte
+Asunto: Adjunto Supervivencia
+Categoría: Supervivencia
 Respuesta:
-Hola, gracias por contactarnos. Hemos recibido su solicitud y la estamos analizando.
-Un representante se comunicará con usted pronto.
+Hola, gracias por enviar la documentación de supervivencia, la misma ha sido recibida y será sujeta a verificación. Ante cualquier necesidad nos estaremos comunicando con Ud. a la brevedad
 FechaRegistro: 2025-03-20T14:30:00
 ---
 ```
 ### 📂 log_acciones.txt
 ```yaml
 CorreoID: A23JK9X
-Asunto: Problema con mi cuenta
-Categoría: Soporte
-Accion: Abrir ticket de soporte en el sistema interno.
+Asunto: Adjunto Supervivencia
+Categoría: Documentación
+Accion: Guardar el archivo adjunto en la carpeta correspondiente.
 FechaRegistro: 2025-03-20T14:30:00
 ---
 

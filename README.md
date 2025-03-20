@@ -83,13 +83,14 @@ python main.py
 
 ```
 ## 🔄 Flujo de Trabajo del Bot
-
-1️⃣ Detecta un nuevo correo en Outlook.
-2️⃣ Clasifica el correo con Google Gemini.
-3️⃣ Consulta la guía de respuestas para determinar qué hacer.
-4️⃣ Genera un mensaje humano basado en la guía, sin citarla textualmente.
-5️⃣ Guarda la respuesta y la acción en logs, sin enviar correos aún.
-6️⃣ Continúa ejecutándose en un bucle esperando más correos.
+```yaml
+1️⃣ Detecta un nuevo correo en Outlook.  
+2️⃣ Clasifica el correo con Google Gemini.  
+3️⃣ Consulta la guía de respuestas para determinar qué hacer.  
+4️⃣ Genera un mensaje humano basado en la guía, sin citarla textualmente.  
+5️⃣ Guarda la respuesta y la acción en logs, sin enviar correos aún.  
+6️⃣ Continúa ejecutándose en un bucle esperando más correos.  S
+```
 
 ## 📄 Ejemplo de Registro en Log
 ### 📂 log_respuestas.txt

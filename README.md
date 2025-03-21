@@ -37,8 +37,8 @@ Este sistema monitorea en **tiempo real** los correos entrantes de Outlook, los 
 ## 📦 **Instalación y Uso**
 ### 1️⃣ **Clonar el repositorio**
 ```sh
-git clone https://github.com/tu_usuario/abm_numeros_confianza.git
-cd abm_numeros_confianza
+git clone https://github.com/WolfWilson/automatizaciones_gemini.git
+cd automatizaciones_gemini
 ```
 
 ###  2️⃣ **Crear y activar un entorno virtual**
@@ -53,7 +53,7 @@ python -m venv venv
 pip install -r requirements.txt
 
 ```
-###4️⃣ **Configurar Variables de Entorno**
+###  4️⃣ **Configurar Variables de Entorno**
 Crea un archivo .env en el directorio raíz con el siguiente contenido:
 ```sh
 GOOGLE_GEMINI_API_KEY="TU_API_KEY_DE_GOOGLE"
@@ -91,6 +91,7 @@ python outlook_reader_realtime.py
 
 ```
 ## 🔄 Flujo de Trabajo del Bot
+
 ```yaml
 1️⃣ Detecta un nuevo correo en Outlook.  
 2️⃣ Clasifica el correo con Google Gemini.  
@@ -113,6 +114,7 @@ FechaRegistro: 2025-03-20T14:30:00
 ---
 ```
 ### 📂 log_acciones.txt
+
 ```yaml
 CorreoID: A23JK9X
 Asunto: Adjunto Supervivencia

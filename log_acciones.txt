@@ -598,3 +598,27 @@ Categoría: Soporte
 Accion: Abrir ticket de soporte
 FechaRegistro: 2025-03-20T11:51:54.993909
 ---
+CorreoID: AAMkADAyNTNjMTdkLTI2MDUtNGJiZC1hMWQzLTdlNzIzM2JmZTY0YwBGAAAAAACDrI4oPnPdQoE6e/AGQ5ZxBwAVcfe0ViyURYNd2CoP15R8AAAAAAEMAAAVcfe0ViyURYNd2CoP15R8AANH83zAAAA=
+Asunto: RE: Odontograma
+Categoría: Soporte/Desarrollo
+Accion: Ninguna acción específica
+FechaRegistro: 2025-03-27T08:28:47.565802
+---
+CorreoID: AAMkADAyNTNjMTdkLTI2MDUtNGJiZC1hMWQzLTdlNzIzM2JmZTY0YwBGAAAAAACDrI4oPnPdQoE6e/AGQ5ZxBwAVcfe0ViyURYNd2CoP15R8AAAAAAEMAAAVcfe0ViyURYNd2CoP15R8AANH83zBAAA=
+Asunto: eliminar foja 11
+Categoría: Solicitud
+Accion: Registrar solicitud en el sistema
+FechaRegistro: 2025-03-27T08:33:55.575490
+---
+CorreoID: AAMkADAyNTNjMTdkLTI2MDUtNGJiZC1hMWQzLTdlNzIzM2JmZTY0YwBGAAAAAACDrI4oPnPdQoE6e/AGQ5ZxBwAVcfe0ViyURYNd2CoP15R8AAAAAAEMAAAVcfe0ViyURYNd2CoP15R8AANH83zCAAA=
+Asunto: RE: Confirmación de Borrado de Fojas
+Categoría: Soporte
+Accion: Abrir ticket de soporte
+FechaRegistro: 2025-03-27T08:55:00.433827
+---
+CorreoID: AAMkADAyNTNjMTdkLTI2MDUtNGJiZC1hMWQzLTdlNzIzM2JmZTY0YwBGAAAAAACDrI4oPnPdQoE6e/AGQ5ZxBwAVcfe0ViyURYNd2CoP15R8AAAAAAEMAAAVcfe0ViyURYNd2CoP15R8AANH83zDAAA=
+Asunto: expte 8986/2022 AGUIRRE MARIELA
+Categoría: Soporte
+Accion: Abrir ticket de soporte
+FechaRegistro: 2025-03-27T10:06:12.331635
+---

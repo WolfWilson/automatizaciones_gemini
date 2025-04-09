@@ -8,11 +8,11 @@ guia_cat_rep = {
             "ofrece una breve explicación y una pronta solución."
         )
     },
-    "factura": {
-        "accion": "Enviar al área de facturación",
+   "supervivencias": {
+        "accion": "Enviar al área de novedades",
         "guia": (
-            "Sé cordial y pide detalles necesarios para gestionar la factura. "
-            "Menciona el procedimiento para facturación y ofrece más ayuda."
+            "Sé cordial e informa que se recibió correctamente. "
+            "Comenta que es un trámite trimestral e indica la próxima presentación."
         )
     },
     "solicitud": {
@@ -22,6 +22,29 @@ guia_cat_rep = {
             "Mantén un tono amable y accesible."
         )
     },
+
+    "documentos/remesas": {
+    "accion": "Registrar documento recibido",
+    "guia": (
+        "Confirma que el archivo ha sido recibido. Si es un certificado de supervivencia, "
+        "agradece y menciona que será procesado. No pedir información redundante."
+    )
+},
+"consulta/seguimiento": {
+    "accion": "Verificar estado de expediente",
+    "guia": (
+        "Agradece la consulta, confirma la recepción del mensaje y explica brevemente cómo se realizará "
+        "el seguimiento del expediente. Evita tecnicismos innecesarios."
+    )
+},
+"trámites/documentación": {
+    "accion": "Actualizar legajo o expediente",
+    "guia": (
+        "Confirma que el documento fue recibido, indica que será revisado y que se actualiza el expediente. "
+        "Mantén la respuesta cordial y clara."
+    )
+}
+
     # ... Agrega más categorías según tu necesidad
 }
 

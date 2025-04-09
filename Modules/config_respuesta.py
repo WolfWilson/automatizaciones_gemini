@@ -3,8 +3,9 @@
 FIRMA = """
 Saludos cordiales,
 Aura
+Asistente de Automatizaciones con IA de lenguaje natural generativo
 Gerencia de Jubilaciones
-INSSSEP
+Instituto de Seguridad Social, Seguros y Préstamos (INSSSEP)
 """
 
 CONTEXTO_BASE = (

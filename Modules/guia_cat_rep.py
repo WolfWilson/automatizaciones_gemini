@@ -15,6 +15,7 @@ guia_cat_rep = {
             "Comenta que es un trámite trimestral e indica la próxima presentación."
         )
     },
+    
     "solicitud": {
         "accion": "Registrar solicitud en el sistema",
         "guia": (

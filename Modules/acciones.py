@@ -1,21 +1,23 @@
 # Modules/acciones.py
+
 import re
 from exchangelib import Message, Mailbox
 from Modules.conexion_db import buscar_por_dni
 
-
-#:::::::::::::::::::::::: SECCION PARA TRATAR SUPERVIVENCIAS :::::::::::::::::::::::::::::
+# -------------------------------------------------------------------
+# SUPERVIVENCIAS
+# -------------------------------------------------------------------
 def reenviar_supervivencia_a_analisis(email):
     """
-    Reenvía el correo original a abouvier@insssep.gov.ar con asunto, body y destinatarios.
-    Este método ya envía el correo directamente y devuelve True o lanza error.
+    Reenvía el correo original a abouvier@insssep.gov.ar con subject, body y destinatario.
+    Versión actual => forward(...) envía y retorna bool.
     """
     success = email.forward(
         subject=f"FW: {email.subject or '(Sin asunto)'}",
         body=(
-            "Estimado/a, se reenvía este correo con documentación de supervivencia "
-            "para su verificación. En caso de que la supervivencia no cumpla los estándares, "
-            "por favor responda con las correcciones correspondientes."
+            "Se reenvía este correo con documentación de supervivencia "
+            "para su verificación. Por favor, si no cumple estándares, "
+            "responder con las correcciones necesarias."
         ),
         to_recipients=["abouvier@insssep.gov.ar"]
     )
@@ -23,17 +25,12 @@ def reenviar_supervivencia_a_analisis(email):
         print("Correo reenviado exitosamente a abouvier@insssep.gov.ar")
 
 
-#:::::::::::::::::::::: SECCION PARA TRATAR CONSULTAS  ::::::::::::::::::::::::::::
-
-# Modules/acciones.py
-import re
-from exchangelib import Message, Mailbox
-
-from Modules.conexion_db import buscar_por_dni
-
+# -------------------------------------------------------------------
+# CONSULTAS / RECLAMOS
+# -------------------------------------------------------------------
 def limpiar_texto_cuerpo_al_reenviar(texto):
     """
-    Borra la advertencia 'Cuidado: Este correo...' antes de reenviar.
+    Borra la advertencia antes de reenvío.
     """
     advertencia = "Cuidado: Este correo electronico se originó fuera"
     lineas = texto.split('\n')
@@ -46,7 +43,7 @@ def limpiar_texto_cuerpo_al_reenviar(texto):
 
 def extraer_dni_de_texto(texto):
     """
-    Busca un entero (6 a 10 dígitos) que sea el DNI.
+    Busca un entero (6-10 dígitos) => DNI.
     """
     patron = r"\b(\d{6,10})\b"
     match = re.search(patron, texto)
@@ -55,6 +52,9 @@ def extraer_dni_de_texto(texto):
     return None
 
 def consultar_estado_expediente(cuerpo):
+    """
+    Extraer DNI => llamar SP => retorna dict con datos o vacío.
+    """
     dni = extraer_dni_de_texto(cuerpo)
     if not dni:
         print("No se encontró DNI en el cuerpo. SP no se llamará.")
@@ -68,12 +68,11 @@ def consultar_estado_expediente(cuerpo):
         print(f"No se hallaron datos para DNI={dni}.")
         return {}
 
-    # datos es una lista de dict
-    return datos[0]  # Tomamos la primera fila
+    return datos[0]  # primera fila
 
 def armar_fragmento_informacion(datos_sp):
     """
-    Convierte los datos del SP en un pequeño texto
+    Genera texto con la info del SP para incrustar en la respuesta o en aviso.
     """
     if not datos_sp:
         return ""
@@ -85,13 +84,22 @@ def armar_fragmento_informacion(datos_sp):
         f" - Estado: {est}\n"
     )
 
-def enviar_aviso_reclamo(cuenta, asunto_original, cuerpo_correo, datos_sp):
+def enviar_aviso_reclamo(cuenta, asunto_original, cuerpo_correo, datos_sp, respuesta_ia):
     """
-    Envía correo a abouvier y cgianneschi con un resumen
+    Envía un correo a abouvier y cgianneschi con el 'cuerpo_correo' limpio + 
+    la respuesta generada por IA.
     """
-    # Limpiar la advertencia en el cuerpo
     cuerpo_limpio = limpiar_texto_cuerpo_al_reenviar(cuerpo_correo)
     fragmento = armar_fragmento_informacion(datos_sp)
+
+    aviso_body = (
+        f"Se recibió una consulta/reclamo sobre estado de expediente.\n"
+        f"Asunto original: {asunto_original}\n\n"
+        f"Cuerpo del correo (limpio):\n{cuerpo_limpio}\n\n"
+        f"{fragmento}"
+        f"\nLa respuesta automática generada fue:\n{respuesta_ia}\n\n"
+        "Por favor, tomar las acciones correspondientes.\n"
+    )
 
     aviso = Message(
         account=cuenta,
@@ -101,42 +109,18 @@ def enviar_aviso_reclamo(cuenta, asunto_original, cuerpo_correo, datos_sp):
             Mailbox(email_address="cgianneschi@insssep.gov.ar"),
             Mailbox(email_address="mpividori@insssep.gov.ar")
         ],
-        body=(
-            f"Se recibió una consulta/reclamo sobre estado de expediente.\n"
-            f"Asunto original: {asunto_original}\n\n"
-            f"Cuerpo del correo (limpio):\n{cuerpo_limpio}\n\n"
-            f"{fragmento}"
-            "Por favor, tomar las acciones correspondientes.\n"
-        )
+        body=aviso_body
     )
     aviso.send()
-    print("Correo de aviso de reclamo enviado a abouvier + cgianneschi.")
+    print("Correo de aviso de reclamo enviado a mpividori + abouvier + cgianneschi.")
 
-def procesar_consulta_reclamo(cuenta, asunto, cuerpo):
+def procesar_consulta_reclamo(cuenta, asunto, cuerpo, respuesta_ia):
     """
-    Llama SP para traer datos (si hay DNI),
-    envía correo a abouvier + cgianneschi,
-    retorna un texto con info adicional para la respuesta IA.
+    1) Extrae DNI y llama SP (si hay)
+    2) Envía correo de aviso a abouvier + cgianneschi, incluyendo la 'respuesta_ia'
+    3) Retorna un fragmento con info SP, para insertar en la respuesta final 
+       si así se desea.
     """
     datos_sp = consultar_estado_expediente(cuerpo)
-    enviar_aviso_reclamo(cuenta, asunto, cuerpo, datos_sp)
+    enviar_aviso_reclamo(cuenta, asunto, cuerpo, datos_sp, respuesta_ia)
     return armar_fragmento_informacion(datos_sp)
-
-def reenviar_supervivencia_a_analisis(email):
-    """
-    Reenvía el correo a abouvier con una leyenda propia.
-    Versión actual de exchangelib => forward() 
-    requiere subject, body, to_recipients y 
-    ya envía el correo (devuelve bool).
-    """
-    success = email.forward(
-        subject=f"FW: {email.subject or '(Sin asunto)'}",
-        body=(
-            "Se reenvía este correo con documentación de supervivencia "
-            "para su verificación. Por favor, si no cumple estándares, "
-            "responder con las correcciones necesarias."
-        ),
-        to_recipients=["abouvier@insssep.gov.ar"]
-    )
-    if success:
-        print(f"Correo reenviado exitosamente a abouvier@insssep.gov.ar")    

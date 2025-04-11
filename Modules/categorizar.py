@@ -1,10 +1,11 @@
 # Modules/categorizar.py
+
 import google.generativeai as genai
 
 def limpiar_texto_ia(asunto, cuerpo):
     """
-    Remueve la línea 'Cuidado: Este correo...' y 
-    cualquier otra basura que no quieras en el prompt.
+    Remueve la línea 'Cuidado: Este correo electronico se originó fuera'
+    u otras frases no deseadas en el prompt.
     """
     advertencia = "Cuidado: Este correo electronico se originó fuera"
     asunto_limpio = asunto.replace(advertencia, "").strip()
@@ -17,10 +18,11 @@ def limpiar_texto_ia(asunto, cuerpo):
     cuerpo_limpio = "\n".join(filtradas)
     return asunto_limpio, cuerpo_limpio
 
-def categorizar_correo(asunto, cuerpo):
-    # Limpieza previa
-    asunto_limpio, cuerpo_limpio = limpiar_texto_ia(asunto, cuerpo)
-
+def ia_clasificar(asunto_limpio, cuerpo_limpio):
+    """
+    Llama a la IA (Gemini) para obtener una de las categorías definidas,
+    con la regla prioritaria: 'cualquier pregunta sobre estado de expediente => consulta/seguimiento'.
+    """
     prompt = f"""
 Eres un clasificador de correos para Jubilaciones del INSSSEP. 
 Debes devolver siempre UNA de estas categorías (en minúsculas):
@@ -52,8 +54,8 @@ Cuerpo: {cuerpo_limpio}
 Devuelve solo la categoría en minúsculas.
 """
     try:
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        resp = model.generate_content(prompt)
+        modelo = genai.GenerativeModel("gemini-2.0-flash")
+        resp = modelo.generate_content(prompt)
         cat = resp.text.strip().lower()
 
         # Asegurar que sea una de las 7
@@ -68,3 +70,28 @@ Devuelve solo la categoría en minúsculas.
     except Exception as e:
         print("Error IA al clasificar:", e)
         return "otro"
+
+def postprocesar_categoria(categoria, asunto, cuerpo):
+    """
+    REGLA FORZADA: Si detectamos palabras clave
+    (e.g. 'expediente', 'ley 6039', 'contrato de obra', etc.),
+    forzamos la categoría a 'consulta/seguimiento'.
+    """
+    texto = (asunto + " " + cuerpo).lower()
+
+    # Si IA dijo 'trámites/documentación' pero en realidad hay 'expediente' => 'consulta/seguimiento'
+    # Agrega más keywords si deseas
+    if "expediente" in texto:
+        return "consulta/seguimiento"
+
+    return categoria
+
+def categorizar_correo(asunto, cuerpo):
+    # 1) Limpieza
+    asunto_limpio, cuerpo_limpio = limpiar_texto_ia(asunto, cuerpo)
+    # 2) IA
+    cat_ia = ia_clasificar(asunto_limpio, cuerpo_limpio)
+    # 3) REGLAS FINALES
+    cat_final = postprocesar_categoria(cat_ia, asunto, cuerpo)
+
+    return cat_final
